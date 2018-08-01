@@ -4,4 +4,5 @@
 (def files
   [{:key :component-base,
     :name "Component base",
-    :content (inline-resource "snippets/component-base.tsx")}])
+    :content (inline-resource "snippets/component-base.tsx"),
+    :lang "js"}])
