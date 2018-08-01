@@ -1,5 +1,5 @@
 
-{:source-paths ["src" "cli"]
+{:source-paths ["src" "macros" "cli"]
  :dependencies [[mvc-works/hsl          "0.1.2"]
                 [mvc-works/verbosely    "0.1.2"]
                 [mvc-works/shell-page   "0.1.7"]
