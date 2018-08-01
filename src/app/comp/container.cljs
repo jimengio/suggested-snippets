@@ -2,9 +2,7 @@
 (ns app.comp.container
   (:require [hsl.core :refer [hsl]]
             [respo-ui.core :as ui]
-            [respo.macros
-             :refer
-             [defcomp cursor-> action-> mutation-> <> div button textarea span]]
+            [respo.macros :refer [defcomp cursor-> list-> <> div button textarea span pre]]
             [verbosely.core :refer [verbosely!]]
             [respo.comp.space :refer [=<]]
             [reel.comp.reel :refer [comp-reel]]
@@ -13,23 +11,28 @@
             [app.snippets :refer [files]]))
 
 (defcomp
+ comp-snippet
+ (snippet)
+ (div
+  {:style {:border (str "1px solid " (hsl 0 0 92)), :width 400, :overflow :auto}}
+  (div {:style {:padding 8}} (<> (:name snippet)))
+  (pre
+   {:inner-text (:content snippet),
+    :style {:font-family ui/font-code,
+            :font-size 12,
+            :line-height "18px",
+            :margin 0,
+            :padding 8,
+            :padding-bottom 40}})))
+
+(defcomp
  comp-container
  (reel)
  (let [store (:store reel), states (:states store)]
    (div
-    {:style (merge ui/global ui/row)}
-    (textarea
-     {:value (:content store),
-      :placeholder "Content",
-      :style (merge ui/textarea {:width 640, :height 320}),
-      :on-input (action-> :content (:value %e))})
-    (=< "8px" nil)
-    (div
-     {}
-     (comp-md "This is some content with `code`")
-     (=< "8px" nil)
-     (button
-      {:style ui/button,
-       :inner-text (str "run"),
-       :on-click (fn [e d! m!] (println (:content store)))}))
+    {:style (merge ui/global ui/fullscreen ui/column)}
+    (div {:style {:height 48, :border-bottom (str "1px solid " (hsl 0 0 92))}})
+    (list->
+     {:style ui/flex}
+     (->> files (map (fn [snippet] [(:key snippet) (comp-snippet snippet)]))))
     (when dev? (cursor-> :reel comp-reel states reel {})))))
