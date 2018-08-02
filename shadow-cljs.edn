@@ -8,7 +8,8 @@
                 [respo/alerts           "0.3.3"]
                 [respo/value            "0.2.4"]
                 [respo/markdown         "0.2.1"]
-                [respo/reel             "0.3.2"]]
+                [respo/reel             "0.3.2"]
+                [respo/message          "0.3.3"]]
  :open-file-command ["subl" ["%s:%s:%s" :file :line :column]]
  :socket-repl {:port 0}
  :builds {:client {:target :browser
