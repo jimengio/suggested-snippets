@@ -8,7 +8,12 @@
             [reel.core :refer [reel-updater refresh-reel]]
             [reel.schema :as reel-schema]
             [cljs.reader :refer [read-string]]
-            [app.config :as config]))
+            [app.config :as config]
+            ["highlight.js/lib/index" :as hljs]
+            ["highlight.js/lib/languages/clojure" :as clojure-lang]
+            ["highlight.js/lib/languages/bash" :as bash-lang]
+            ["highlight.js/lib/languages/javascript" :as javascript-lang]
+            ["highlight.js/lib/languages/typescript" :as typescript-lang]))
 
 (defonce *reel
   (atom (-> reel-schema/reel (assoc :base schema/store) (assoc :store schema/store))))
@@ -26,6 +31,10 @@
 
 (defn main! []
   (if ssr? (render-app! realize-ssr!))
+  (.registerLanguage hljs "clojure" clojure-lang)
+  (.registerLanguage hljs "bash" bash-lang)
+  (.registerLanguage hljs "javascript" javascript-lang)
+  (.registerLanguage hljs "typescript" typescript-lang)
   (render-app! render!)
   (add-watch *reel :changes (fn [] (render-app! render!)))
   (listen-devtools! "a" dispatch!)
