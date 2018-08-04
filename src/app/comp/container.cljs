@@ -18,7 +18,7 @@
             [clojure.string :as string]
             [respo-message.action :as message-action]
             [respo-message.comp.messages :refer [comp-messages]]
-            [app.util :refer [copy-text!]]))
+            [app.controller :refer [copy-text!]]))
 
 (def style-code-preview
   {:font-family ui/font-code,
