@@ -17,7 +17,8 @@
             ["shortid" :as shortid]
             [clojure.string :as string]
             [respo-message.action :as message-action]
-            [respo-message.comp.messages :refer [comp-messages]]))
+            [respo-message.comp.messages :refer [comp-messages]]
+            [app.controller :refer [copy-text!]]))
 
 (def style-code-preview
   {:font-family ui/font-code,
@@ -26,10 +27,12 @@
    :margin 0,
    :padding 8,
    :padding-bottom 40,
-   :height 400,
-   :width 400,
+   :width "100%",
+   :height "100%",
    :overflow :auto,
-   :padding-top 32})
+   :padding-top 32,
+   :color (hsl 0 0 60),
+   :cursor :pointer})
 
 (def supported-langs
   {"clojure" "clojure",
@@ -47,34 +50,34 @@
   {:style {:border (str "1px solid " (hsl 0 0 92)),
            :display :inline-block,
            :margin 8,
-           :position :relative}}
+           :position :relative,
+           :height 280,
+           :width 400}}
   (div
    {:style {:padding "4px 8px",
             :border-bottom (str "1px solid " (hsl 0 0 90)),
             :position :absolute,
-            :background-color (hsl 0 0 100 0.8),
+            :background-color (hsl 0 0 90 0.8),
             :width "100%"}}
-   (<> (:name snippet)))
+   (<> (:name snippet) {:font-weight 300, :font-size 16}))
   (pre
    {:innerHTML (let [code (:content snippet), lang (:lang snippet)]
       (if (contains? supported-langs lang)
         (.-value (.highlight hljs (get supported-langs lang) code))
         (escape-html code))),
-    :style style-code-preview})
+    :style style-code-preview,
+    :on-click (fn [e d! m!] (copy-text! (:content snippet) d!))})
   (span
    {:inner-text "Copy",
     :style {:position :absolute,
-            :right 8,
             :bottom 8,
-            :background-color (hsl 0 0 100 0.7),
+            :right 8,
             :border "1px solid #ddd",
             :padding "0 8px",
-            :cursor :pointer},
-    :on-click (fn [e d! m!]
-      (copy (:content snippet))
-      (let [new-token (.generate shortid)]
-        (d! message-action/create {:text "Copied!", :token new-token})
-        (js/setTimeout #(d! message-action/remove-one {:token new-token}) 2000)))})))
+            :cursor :pointer,
+            :border-radius "8px"},
+    :class-name "clickable",
+    :on-click (fn [e d! m!] (copy-text! (:content snippet) d!))})))
 
 (defcomp
  comp-container
@@ -85,12 +88,19 @@
     (div
      {:style (merge ui/center {:height 48, :border-bottom (str "1px solid " (hsl 0 0 92))})}
      (input
-      {:style ui/input,
-       :placeholder "Query",
+      {:style (merge ui/input {:border :none, :width 240}),
+       :placeholder "Search...",
        :value (:content store),
        :on-input (fn [e d! m!] (d! :content (:value e)))}))
     (list->
-     {:style (merge ui/flex {:padding 16, :overflow :auto, :padding-bottom 120})}
+     {:style (merge
+              ui/flex
+              ui/row
+              {:padding 16,
+               :overflow :auto,
+               :padding-bottom 120,
+               :justify-content :center,
+               :flex-wrap :wrap})}
      (->> files
           (filter
            (fn [snippet]
